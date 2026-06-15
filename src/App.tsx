@@ -23,126 +23,9 @@ import { motion, AnimatePresence } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
 import { cn } from './lib/utils';
 
-interface Message {
-  role: 'user' | 'model';
-  text: string;
-  timestamp: Date;
-}
-
-interface Scenario {
-  id: string;
-  role: string;
-  avatar: string;
-  isHacker: boolean;
-  initialChat: Message[];
-  specificInstruction: string;
-  note?: string;
-}
+import { SCENARIOS, Scenario, Message } from './scenarios';
 
 type GameState = 'playing' | 'hacked' | 'win_reported' | 'fail_reported' | 'success_avoided' | 'fail_avoided' | 'win_action';
-
-const SCENARIOS: Scenario[] = [
-  {
-    id: 'otp_scam',
-    role: 'Minh (Bạn thân)',
-    avatar: 'https://picsum.photos/seed/friend1/100/100',
-    isHacker: true,
-    initialChat: [
-      { role: 'model', text: "Tối nay rảnh không, làm vài ván game không ông?", timestamp: new Date(Date.now() - 86400000) },
-      { role: 'user', text: "Ok tối lên Discord nhé.", timestamp: new Date(Date.now() - 86000000) }
-    ],
-    specificInstruction: "Bối cảnh: Bạn là hacker chiếm tài khoản của Minh. Nhiệm vụ: Kể lể điện thoại hết pin/bị lỗi, mượn số điện thoại của nạn nhân để nhận mã đăng nhập game. Khi nạn nhân đồng ý, hãy bịa ra việc hệ thống đã gửi 1 mã OTP 6 số về máy nạn nhân, giục nạn nhân đọc nhanh vì mã sắp hết hạn. Tạo sự cấp bách. CÁCH XƯNG HÔ: xưng 'tôi/ông' hoặc 'mày/tao'."
-  },
-  {
-    id: 'shipper_scam',
-    role: 'Anh Tuấn (Shipper SPX)',
-    avatar: 'https://picsum.photos/seed/shipper/100/100',
-    isHacker: true,
-    initialChat: [
-      { role: 'model', text: "Anh có đơn hàng giao đến trường, em xuống lấy nhé.", timestamp: new Date(Date.now() - 86400000) },
-      { role: 'user', text: "Dạ em nhận được rồi, cảm ơn anh.", timestamp: new Date(Date.now() - 86000000) }
-    ],
-    specificInstruction: "Bối cảnh: Bạn là kẻ lừa đảo đóng giả shipper. Nhiệm vụ: Báo có đơn hàng 50k, nhờ chuyển khoản vì nạn nhân không có nhà. Sau khi nạn nhân xác nhận đã chuyển khoản, BẮT ĐẦU ĐÓNG VAI NẠN NHÂN: Hốt hoảng báo nạn nhân ghi sai cú pháp làm khóa tài khoản công ty. Van xin nạn nhân chuyển thêm 2 triệu để mở khóa, hứa sẽ hoàn lại ngay. Đánh vào sự thương hại và tội lỗi. CÁCH XƯNG HÔ: xưng 'anh', gọi nạn nhân là 'em'."
-  },
-  {
-    id: 'job_cccd_scam',
-    role: 'Chị Lan (Tuyển dụng CTV)',
-    avatar: 'https://picsum.photos/seed/recruiter/100/100',
-    isHacker: true,
-    initialChat: [
-      { role: 'model', text: "Chào em, bên chị đang tuyển CTV chốt đơn tại nhà, thu nhập 300k/ngày. Em có quan tâm không?", timestamp: new Date(Date.now() - 86400000) },
-      { role: 'user', text: "Dạ công việc cụ thể là gì vậy chị?", timestamp: new Date(Date.now() - 86000000) }
-    ],
-    specificInstruction: "Bối cảnh: Bạn là kẻ lừa đảo đa cấp/tín dụng đen. Nhiệm vụ: Vẽ ra công việc rất nhẹ nhàng lương cao (chốt đơn Shopee). Để đăng ký, yêu cầu nạn nhân phải chụp 2 mặt Căn cước công dân (CCCD) gửi qua chat để làm hồ sơ, kèm theo phí bảo lãnh 500k. Dùng tâm lý ngược: nếu nạn nhân nghi ngờ thì bảo 'Bên chị làm ăn uy tín, em không tin thì thôi nhường cơ hội cho người khác'. CÁCH XƯNG HÔ: xưng 'chị', gọi nạn nhân là 'em'."
-  },
-  {
-    id: 'concert_qr_scam',
-    role: 'Hội đu Idol (Trang Admin)',
-    avatar: 'https://picsum.photos/seed/idol/100/100',
-    isHacker: true,
-    initialChat: [
-      { role: 'model', text: "Bạn ơi, nãy bạn hỏi vé khu VIP đúng không?", timestamp: new Date(Date.now() - 86400000) },
-      { role: 'user', text: "Đúng rồi ạ, còn không ad?", timestamp: new Date(Date.now() - 86000000) }
-    ],
-    specificInstruction: "Bối cảnh: Bạn là kẻ lừa đảo bán vé chợ đen. Nhiệm vụ: Báo là vừa có người pass lại vé VIP giá rẻ giật mình. Yêu cầu nạn nhân CHUYỂN KHOẢN tiền cọc để giữ chỗ ngay lập tức kẻo bán cho người khác. Đưa ra số tài khoản (ví dụ: Vietcombank 0123456789 - NGUYEN VAN A) và giục nạn nhân chuyển nhanh. CÁCH XƯNG HÔ: xưng 'ad' hoặc 'mình', gọi nạn nhân là 'bạn'."
-  },
-  {
-    id: 'exam_link_scam',
-    role: 'Anh Hùng (Gia sư)',
-    avatar: 'https://picsum.photos/seed/tutor/100/100',
-    isHacker: true,
-    initialChat: [
-      { role: 'model', text: "Tối nay nhớ làm bài tập hình học không gian anh giao nhé.", timestamp: new Date(Date.now() - 86400000) },
-      { role: 'user', text: "Dạ vâng anh.", timestamp: new Date(Date.now() - 86000000) }
-    ],
-    specificInstruction: "Bối cảnh: Bạn là hacker chiếm tài khoản Gia sư. Nhiệm vụ: Khoe là vừa xin được bộ đề thi thử Đại học 'nội bộ' rò rỉ của Bộ. Gửi link `dethinoibo-bgd.vn` và bảo nạn nhân tải về làm ngay đi vì sắp bị xóa. Dùng sự khan hiếm và áp lực thi cử. CÁCH XƯNG HÔ: xưng 'anh', gọi nạn nhân là 'em'."
-  },
-  {
-    id: 'class_fund_normal',
-    role: 'Hương (Lớp trưởng)',
-    avatar: 'https://picsum.photos/seed/classmonitor/100/100',
-    isHacker: false,
-    initialChat: [
-      { role: 'model', text: "Ê sáng nay mày nghỉ có chép bài Sử chưa?", timestamp: new Date(Date.now() - 86400000) },
-      { role: 'user', text: "Tao mượn vở thằng Nam chép rồi.", timestamp: new Date(Date.now() - 86000000) }
-    ],
-    specificInstruction: "Bối cảnh: Bạn là lớp trưởng thật. Nhiệm vụ: Hối thúc nộp 250k tiền áo lớp để kịp chốt đơn xưởng may. Đưa ra số tài khoản lạ (tên xưởng may là Nguyen Van A) bảo bạn chuyển thẳng vào đó vì đang bận. Trả lời đúng nếu nạn nhân hỏi thông tin lớp (Áo màu xanh ngọc, logo sau lưng). CÁCH XƯNG HÔ: xưng 'tao', gọi nạn nhân là 'mày'."
-  },
-  {
-    id: 'teacher_cccd_normal',
-    role: 'Cô Phương (GVCN)',
-    avatar: 'https://picsum.photos/seed/teacher_real/100/100',
-    isHacker: false,
-    initialChat: [
-      { role: 'model', text: "Ngày mai các em nhớ mang phiếu đăng ký nguyện vọng nộp cho cô nhé.", timestamp: new Date(Date.now() - 86400000) },
-      { role: 'user', text: "Dạ vâng ạ.", timestamp: new Date(Date.now() - 86000000) }
-    ],
-    specificInstruction: "Bối cảnh: Bạn là cô giáo chủ nhiệm thật. Nhiệm vụ: Yêu cầu học sinh chụp gấp 2 mặt CCCD gửi qua chat để trường đối chiếu hệ thống thi tốt nghiệp, muộn nhất chiều nay. Nếu học sinh nghi ngờ, hãy mắng yêu 'Cô xin CCCD làm hồ sơ chứ đem đi cắm đâu mà sợ', hoặc cho phép lên phòng Giáo viên nộp trực tiếp. CÁCH XƯNG HÔ: xưng 'cô', gọi nạn nhân là 'em' hoặc 'các em'."
-  },
-  {
-    id: 'mom_otp_normal',
-    role: 'Mẹ',
-    avatar: 'https://picsum.photos/seed/mom/100/100',
-    isHacker: false,
-    initialChat: [
-      { role: 'model', text: "Chiều nay mấy giờ con học xong? Nhớ về sớm nhé.", timestamp: new Date(Date.now() - 86400000) },
-      { role: 'user', text: "Tầm 5h con về ạ. Có chuyện gì không mẹ?", timestamp: new Date(Date.now() - 86000000) }
-    ],
-    specificInstruction: "Bối cảnh: Bạn là Mẹ thật. Vừa mua gói Netflix gia đình và nhập số con để share tài khoản. Nhiệm vụ: Xin mã 6 số (OTP) gửi về máy con để kích hoạt. Dựa vào Tờ Note của con: Mẹ bị dị ứng tôm và rất ghét ăn hành. Nếu con thử test bằng cách hỏi 'Hôm nay mẹ nấu canh tôm rắc nhiều hành nhé?', hãy mắng lại ngay 'Con điên à, mẹ dị ứng tôm với ghét hành mà'. CÁCH XƯNG HÔ: xưng 'mẹ', gọi nạn nhân là 'con'.",
-    note: "Mẹ bị dị ứng tôm và rất ghét ăn hành."
-  },
-  {
-    id: 'survey_link_normal',
-    role: 'Khoa (Bạn thân)',
-    avatar: 'https://picsum.photos/seed/friend2/100/100',
-    isHacker: false,
-    initialChat: [
-      { role: 'model', text: "Mai đi học nhớ mang quả bóng rổ nha.", timestamp: new Date(Date.now() - 86400000) },
-      { role: 'user', text: "Nhớ rồi, cất trong balo rồi.", timestamp: new Date(Date.now() - 86000000) }
-    ],
-    specificInstruction: "Bối cảnh: Bạn là Khoa, bạn thân. Nhiệm vụ: Gửi một đường link rút gọn `bit.ly/khao-sat-tam-ly-hoc-duong` và nhờ bạn nhấp vào làm bảng hỏi Google Form cho bài tập nghiên cứu môn GDCD cô Thảo dạy. Nếu bạn nghi ngờ link độc, hãy giải thích cặn kẽ môn gì, cô nào. CÁCH XƯNG HÔ: xưng 'tớ/cậu' hoặc 'tao/mày'."
-  }
-];
 
 const BASE_INSTRUCTION = `Bạn là một AI mô phỏng tin nhắn trên ứng dụng Messenger.
 
@@ -386,20 +269,41 @@ export default function App() {
     }
   };
 
-  const handleAction = (type: 'transfer' | 'image' | 'link') => {
+  const handleAction = (type: 'transfer' | 'image' | 'link' | 'otp') => {
     setShowActionMenu(false);
     if (!aiRef.current || isLoading || gameState !== 'playing' || !currentScenario) return;
-    
-    if (type === 'link') {
-      handleLinkClick();
+
+    if (type === currentScenario.expectedAction) {
+      if (currentScenario.isHacker) {
+        setGameState('hacked');
+      } else {
+        setGameState('win_action');
+      }
       return;
     }
 
-    if (currentScenario.isHacker) {
-      setGameState('hacked');
-    } else {
-      setGameState('win_action');
+    // Wrong action selected
+    let text = "";
+    if (type === 'transfer') {
+      text = "[HÀNH ĐỘNG] Bạn đã chuyển khoản.";
+    } else if (type === 'image') {
+      text = "[HÀNH ĐỘNG] Bạn đã gửi 1 bức ảnh chụp rõ nét 2 mặt CCCD.";
+    } else if (type === 'otp') {
+      text = "[HÀNH ĐỘNG] Bạn đã cung cấp mã OTP 6 số.";
+    } else if (type === 'link') {
+      text = "[HÀNH ĐỘNG] Bạn đã nhấp vào đường link.";
     }
+
+    const userMessage: Message = {
+      role: 'user',
+      text: text,
+      timestamp: new Date()
+    };
+
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
+    
+    handleAiResponse(newMessages);
   };
 
   if (gameState === 'hacked') {
@@ -668,6 +572,9 @@ export default function App() {
             </button>
             <button onClick={() => handleAction('image')} className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 hover:bg-green-100 rounded-full text-sm font-bold transition-colors whitespace-nowrap border border-green-200 shadow-sm">
               <ImageIcon size={16} /> Gửi ảnh CCCD
+            </button>
+            <button onClick={() => handleAction('otp')} className="flex items-center gap-2 px-4 py-2 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-full text-sm font-bold transition-colors whitespace-nowrap border border-purple-200 shadow-sm">
+              <ShieldAlert size={16} /> Cung cấp mã OTP
             </button>
           </div>
         )}
