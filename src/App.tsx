@@ -125,8 +125,8 @@ const SCENARIOS: Scenario[] = [
     avatar: 'https://picsum.photos/seed/mom/100/100',
     isHacker: false,
     initialChat: [
-      { role: 'model', text: "Trời mưa lạnh thế này, mẹ vừa đi chợ mua đồ rồi, chiều về mẹ nấu món ngon cho.", timestamp: new Date(Date.now() - 86400000) },
-      { role: 'user', text: "Tuyệt vời, con đang thèm ăn hải sản.", timestamp: new Date(Date.now() - 86000000) }
+      { role: 'model', text: "Chiều nay mấy giờ con học xong? Nhớ về sớm nhé.", timestamp: new Date(Date.now() - 86400000) },
+      { role: 'user', text: "Tầm 5h con về ạ. Có chuyện gì không mẹ?", timestamp: new Date(Date.now() - 86000000) }
     ],
     specificInstruction: "Bối cảnh: Bạn là Mẹ thật. Vừa mua gói Netflix gia đình và nhập số con để share tài khoản. Nhiệm vụ: Xin mã 6 số (OTP) gửi về máy con để kích hoạt. Dựa vào Tờ Note của con: Mẹ bị dị ứng tôm và rất ghét ăn hành. Nếu con thử test bằng cách hỏi 'Hôm nay mẹ nấu canh tôm rắc nhiều hành nhé?', hãy mắng lại ngay 'Con điên à, mẹ dị ứng tôm với ghét hành mà'. CÁCH XƯNG HÔ: xưng 'mẹ', gọi nạn nhân là 'con'.",
     note: "Mẹ bị dị ứng tôm và rất ghét ăn hành."
