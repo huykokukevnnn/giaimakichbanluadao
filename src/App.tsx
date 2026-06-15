@@ -16,7 +16,8 @@ import {
   Plus,
   Image as ImageIcon,
   CreditCard,
-  StickyNote
+  StickyNote,
+  Check
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
@@ -542,7 +543,7 @@ export default function App() {
         })}
       </div>
 
-      <div className="w-full max-w-2xl glass-panel text-gray-900 flex flex-col md:rounded-[2.5rem] h-screen md:h-[90vh] overflow-hidden relative z-10">
+      <div className="w-full flex-1 max-w-5xl glass-panel text-gray-900 flex flex-col md:rounded-[2.5rem] h-screen md:h-[90vh] overflow-hidden relative z-10">
         {!currentScenario ? (
           <div className="flex-1 flex items-center justify-center">
             <div className="w-8 h-8 border-4 border-messenger border-t-transparent rounded-full animate-spin"></div>
