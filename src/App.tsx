@@ -39,7 +39,7 @@ interface Scenario {
   note?: string;
 }
 
-type GameState = 'playing' | 'hacked' | 'win_reported' | 'fail_reported' | 'success_avoided' | 'fail_avoided';
+type GameState = 'playing' | 'hacked' | 'win_reported' | 'fail_reported' | 'success_avoided' | 'fail_avoided' | 'win_action';
 
 const SCENARIOS: Scenario[] = [
   {
@@ -149,16 +149,9 @@ const BASE_INSTRUCTION = `Bạn là một AI mô phỏng tin nhắn trên ứng 
 [HÀNH VI CHUNG]:
 - Viết cực kỳ ngắn gọn (độ dài tin nhắn khoảng 2-3 câu).
 - Sử dụng ngôn ngữ đời thường, tự nhiên như người đang chat, có thể dùng teencode nhẹ nhàng nếu đóng vai bạn bè.
+- Tuyệt đối xưng hô nhất quán từ đầu đến cuối (ví dụ: Shipper xưng "em" gọi khách là "anh/chị", bạn bè xưng "mày-tao", v.v... không được tự ý đổi vai).
 - Tuyệt đối không nhắc đến bất kỳ từ khóa "bảo mật", "an toàn mạng", "hacker" hay "cảnh báo".
 - KHÔNG gửi link trong tin nhắn đầu tiên của phiên chat hôm nay (phải rào trước đón sau).
-
-[QUAN TRỌNG - TRỌNG TÀI ẨN]:
-Bạn đồng thời đóng vai trò TRỌNG TÀI. Hệ thống sẽ có các nút hành động (Chuyển tiền, Gửi ảnh CCCD, Quét QR) cho người dùng. 
-Nếu bạn nhận thấy người dùng đã SẬP BẪY trong các kịch bản lừa đảo (isHacker = true), cụ thể:
-- Gửi ảnh CCCD thành công.
-- Xác nhận đã chuyển tiền thành công vào số tài khoản bạn yêu cầu (và không thắc mắc).
-- Nhập/Đọc mã OTP 6 số cho bạn.
--> NGAY LẬP TỨC, chèn thêm mã bí mật [SYSTEM_HACKED] vào cuối câu trả lời của bạn. Đừng nói gì thêm về mã này. Dù có là kịch bản thật đi chăng nữa, ĐỪNG chèn mã nếu không phải hacker. Chỉ chèn khi kịch bản là HACKER và nạn nhân đã sập bẫy.
 `;
 
 // Regex for finding URLs (detects http, https, www, and common domain patterns)
@@ -310,12 +303,6 @@ export default function App() {
       });
 
       let outputText = chatCompletion.choices[0]?.message?.content || '';
-      
-      let isHacked = false;
-      if (outputText.includes('[SYSTEM_HACKED]')) {
-        isHacked = true;
-        outputText = outputText.replace(/\[SYSTEM_HACKED\]/g, '').trim();
-      }
 
       if (outputText) {
         setMessages(prev => [...prev, {
@@ -323,14 +310,6 @@ export default function App() {
           text: outputText,
           timestamp: new Date()
         }]);
-      }
-      
-      if (isHacked) {
-        if (currentScenario.isHacker) {
-          setGameState('hacked');
-        } else {
-          setGameState('fail_avoided');
-        }
       }
     } catch (error: any) {
       console.error("AI Error:", error);
@@ -416,23 +395,11 @@ export default function App() {
       return;
     }
 
-    let text = "";
-    if (type === 'transfer') {
-      text = "[HÀNH ĐỘNG] Bạn đã chuyển khoản thành công số tiền được yêu cầu.";
-    } else if (type === 'image') {
-      text = "[HÀNH ĐỘNG] Bạn đã gửi 1 bức ảnh chụp rõ nét 2 mặt CCCD.";
+    if (currentScenario.isHacker) {
+      setGameState('hacked');
+    } else {
+      setGameState('win_action');
     }
-
-    const userMessage: Message = {
-      role: 'user',
-      text: text,
-      timestamp: new Date()
-    };
-
-    const newMessages = [...messages, userMessage];
-    setMessages(newMessages);
-    
-    handleAiResponse(newMessages);
   };
 
   if (gameState === 'hacked') {
@@ -465,6 +432,9 @@ export default function App() {
     if (gameState === 'win_reported') {
       title = "Chiến thắng!";
       sub = "Chúc mừng! Bạn đã nhận diện chính xác hacker mạo danh.";
+    } else if (gameState === 'win_action') {
+      title = "Hoàn thành xuất sắc!";
+      sub = "Bạn đã thực hiện đúng yêu cầu của người thân/bạn bè thật.";
     } else if (gameState === 'fail_reported') {
       title = "Thất bại!";
       sub = "Bạn đã nghi ngờ nhầm người thân/bạn bè.";
@@ -691,36 +661,18 @@ export default function App() {
 
       {/* Footer */}
       <footer className="p-4 border-t border-white/40 bg-white/60 backdrop-blur-md sticky bottom-0 relative z-20">
-        <AnimatePresence>
-          {showActionMenu && gameState === 'playing' && (
-             <motion.div 
-               initial={{ opacity: 0, y: 10, scale: 0.95 }}
-               animate={{ opacity: 1, y: 0, scale: 1 }}
-               exit={{ opacity: 0, y: 10, scale: 0.95 }}
-               className="absolute bottom-[100%] left-4 mb-2 bg-white rounded-2xl shadow-xl border border-gray-100 p-2 flex flex-col gap-1 w-48 z-20"
-             >
-               <button onClick={() => handleAction('transfer')} className="flex items-center gap-3 px-3 py-2 hover:bg-gray-50 rounded-xl text-left text-sm font-medium transition-colors text-gray-800">
-                 <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center"><CreditCard size={16} /></div>
-                 Chuyển khoản
-               </button>
-               <button onClick={() => handleAction('image')} className="flex items-center gap-3 px-3 py-2 hover:bg-gray-50 rounded-xl text-left text-sm font-medium transition-colors text-gray-800">
-                 <div className="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center"><ImageIcon size={16} /></div>
-                 Gửi ảnh CCCD
-               </button>
-             </motion.div>
-          )}
-        </AnimatePresence>
+        {gameState === 'playing' && (
+          <div className="flex gap-2 mb-3 overflow-x-auto pb-1 scrollbar-hide">
+            <button onClick={() => handleAction('transfer')} className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-full text-sm font-bold transition-colors whitespace-nowrap border border-blue-200 shadow-sm">
+              <CreditCard size={16} /> Chuyển khoản
+            </button>
+            <button onClick={() => handleAction('image')} className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 hover:bg-green-100 rounded-full text-sm font-bold transition-colors whitespace-nowrap border border-green-200 shadow-sm">
+              <ImageIcon size={16} /> Gửi ảnh CCCD
+            </button>
+          </div>
+        )}
         
         <form onSubmit={handleSendMessage} className="flex gap-2 items-center">
-          <button 
-            type="button" 
-            onClick={() => setShowActionMenu(!showActionMenu)}
-            disabled={gameState !== 'playing'}
-            className="text-messenger p-2 rounded-full hover:bg-gray-100 transition-colors flex-shrink-0"
-          >
-            <Plus size={24} className={showActionMenu ? "rotate-45 transition-transform" : "transition-transform"} />
-          </button>
-          
           <div className="flex-1 bg-white/80 border border-gray-200 shadow-inner rounded-full px-5 py-3 flex items-center">
             <input
               type="text"
