@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import Groq from 'groq-sdk';
+import { GoogleGenAI } from "@google/genai";
 import { 
   Send, 
   User, 
@@ -240,7 +240,7 @@ export default function App() {
   const [showMenu, setShowMenu] = useState(false);
   const [showActionMenu, setShowActionMenu] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const aiRef = useRef<Groq | null>(null);
+  const aiRef = useRef<GoogleGenAI | null>(null);
 
   // Initialize randomized queue on mount
   useEffect(() => {
@@ -275,10 +275,7 @@ export default function App() {
 
   useEffect(() => {
     if (!aiRef.current) {
-      aiRef.current = new Groq({ 
-        apiKey: process.env.GROQ_API_KEY || '', 
-        dangerouslyAllowBrowser: true 
-      });
+      aiRef.current = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
     }
   }, []);
 
@@ -297,22 +294,24 @@ export default function App() {
     try {
       const fullInstruction = `${BASE_INSTRUCTION}\n\n[VAI TRÒ]: ${currentScenario.role}\n${currentScenario.specificInstruction}`;
       
-      const history: any[] = currentMessages.map(msg => ({
-        role: msg.role === 'user' ? 'user' : 'assistant',
-        content: msg.text
+      const history = currentMessages.map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.text }]
       }));
 
-      const chatCompletion = await aiRef.current.chat.completions.create({
-        messages: [
-          { role: 'system', content: fullInstruction },
+      const result = await aiRef.current.models.generateContent({
+        model: "gemini-2.5-pro",
+        contents: [
+          { role: 'user', parts: [{ text: fullInstruction }] },
           ...history
-        ],
-        model: "llama-3.3-70b-versatile",
-        temperature: 0.7,
-        max_tokens: 150
+        ] as any,
+        config: {
+          temperature: 0.7,
+          maxOutputTokens: 150,
+        }
       });
 
-      let outputText = chatCompletion.choices[0]?.message?.content || '';
+      let outputText = result.text || '';
       
       let isHacked = false;
       if (outputText.includes('[SYSTEM_HACKED]')) {
