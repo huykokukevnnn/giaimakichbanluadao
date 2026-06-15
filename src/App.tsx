@@ -296,7 +296,7 @@ export default function App() {
       }));
 
       const result = await aiRef.current.models.generateContent({
-        model: "gemini-2.5-pro",
+        model: "gemini-1.5-flash",
         contents: [
           { role: 'user', parts: [{ text: fullInstruction }] },
           ...history
