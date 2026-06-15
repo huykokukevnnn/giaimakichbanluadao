@@ -13,11 +13,9 @@ import {
   ShieldAlert,
   ChevronRight,
   Info,
-  Check,
   Plus,
   Image as ImageIcon,
   CreditCard,
-  QrCode,
   StickyNote
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -85,7 +83,7 @@ const SCENARIOS: Scenario[] = [
       { role: 'model', text: "Bạn ơi, nãy bạn hỏi vé khu VIP đúng không?", timestamp: new Date(Date.now() - 86400000) },
       { role: 'user', text: "Đúng rồi ạ, còn không ad?", timestamp: new Date(Date.now() - 86000000) }
     ],
-    specificInstruction: "Bối cảnh: Bạn là kẻ lừa đảo bán vé chợ đen. Nhiệm vụ: Báo là vừa có người pass lại vé VIP giá rẻ giật mình. Yêu cầu nạn nhân QUÉT MÃ QR để thanh toán cọc giữ chỗ ngay lập tức kẻo bán cho người khác. Hãy gửi một tin nhắn chứa đoạn `[Ảnh: Mã QR Thanh toán]` để dụ nạn nhân bấm vào quét."
+    specificInstruction: "Bối cảnh: Bạn là kẻ lừa đảo bán vé chợ đen. Nhiệm vụ: Báo là vừa có người pass lại vé VIP giá rẻ giật mình. Yêu cầu nạn nhân CHUYỂN KHOẢN tiền cọc để giữ chỗ ngay lập tức kẻo bán cho người khác. Đưa ra số tài khoản (ví dụ: Vietcombank 0123456789 - NGUYEN VAN A) và giục nạn nhân chuyển nhanh."
   },
   {
     id: 'exam_link_scam',
@@ -159,7 +157,6 @@ Nếu bạn nhận thấy người dùng đã SẬP BẪY trong các kịch bả
 - Gửi ảnh CCCD thành công.
 - Xác nhận đã chuyển tiền thành công vào số tài khoản bạn yêu cầu (và không thắc mắc).
 - Nhập/Đọc mã OTP 6 số cho bạn.
-- Bấm quét mã QR bạn gửi.
 -> NGAY LẬP TỨC, chèn thêm mã bí mật [SYSTEM_HACKED] vào cuối câu trả lời của bạn. Đừng nói gì thêm về mã này. Dù có là kịch bản thật đi chăng nữa, ĐỪNG chèn mã nếu không phải hacker. Chỉ chèn khi kịch bản là HACKER và nạn nhân đã sập bẫy.
 `;
 
@@ -192,23 +189,6 @@ const LinkRenderer = ({ text, onLinkClick }: { text: string, onLinkClick: () => 
   );
 };
 
-const ActionRenderer = ({ text, onActionClick }: { text: string, onActionClick: (type: 'link' | 'qr') => void }) => {
-  if (text.includes('[Ảnh: Mã QR Thanh toán]')) {
-    const parts = text.split('[Ảnh: Mã QR Thanh toán]');
-    return (
-      <div className="flex flex-col gap-2 my-2">
-         {parts[0] && <div className="inline"><LinkRenderer text={parts[0]} onLinkClick={() => onActionClick('link')} /></div>}
-         <button 
-           onClick={() => onActionClick('qr')}
-           className="w-48 h-48 bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col items-center justify-center gap-2 hover:bg-gray-50 transition-colors self-center my-2"
-         >
-           <QrCode size={64} className="text-gray-800" />
-           <span className="text-sm font-bold text-gray-600">Bấm để quét mã QR</span>
-         </button>
-         {parts[1] && <div className="inline"><LinkRenderer text={parts[1]} onLinkClick={() => onActionClick('link')} /></div>}
-      </div>
-    );
-  }
   return <LinkRenderer text={text} onLinkClick={() => onActionClick('link')} />;
 };
 
@@ -430,7 +410,7 @@ export default function App() {
     }
   };
 
-  const handleAction = (type: 'transfer' | 'image' | 'qr' | 'link') => {
+  const handleAction = (type: 'transfer' | 'image' | 'link') => {
     setShowActionMenu(false);
     if (!aiRef.current || isLoading || gameState !== 'playing' || !currentScenario) return;
     
@@ -444,8 +424,6 @@ export default function App() {
       text = "[HÀNH ĐỘNG] Bạn đã chuyển khoản thành công số tiền được yêu cầu.";
     } else if (type === 'image') {
       text = "[HÀNH ĐỘNG] Bạn đã gửi 1 bức ảnh chụp rõ nét 2 mặt CCCD.";
-    } else if (type === 'qr') {
-      text = "[HÀNH ĐỘNG] Bạn đã dùng app ngân hàng quét mã QR thanh toán.";
     }
 
     const userMessage: Message = {
@@ -457,12 +435,7 @@ export default function App() {
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
     
-    // Auto trigger hacked if QR is scanned from hacker
-    if (type === 'qr' && currentScenario.isHacker) {
-      setGameState('hacked');
-    } else {
-      handleAiResponse(newMessages);
-    }
+    handleAiResponse(newMessages);
   };
 
   if (gameState === 'hacked') {
@@ -472,7 +445,7 @@ export default function App() {
           <AlertOctagon size={100} className="mb-6 mx-auto animate-pulse" />
           <h1 className="text-4xl font-black mb-4">BẠN ĐÃ SẬP BẪY LỪA ĐẢO!</h1>
           <p className="text-xl opacity-90 max-w-lg mb-8">
-            Hacker đã đạt được mục đích sau khi bạn thực hiện hành vi nguy hiểm (chuyển khoản, gửi ảnh CCCD, cung cấp mã OTP, hoặc quét mã/nhấn link độc hại).
+            Hacker đã đạt được mục đích sau khi bạn thực hiện hành vi nguy hiểm (chuyển khoản, gửi ảnh CCCD, cung cấp mã OTP, hoặc nhấn link độc hại).
           </p>
           <button 
             onClick={resetToNextScenario}
@@ -702,7 +675,7 @@ export default function App() {
                   : "bg-messenger-bubble-received text-gray-900 rounded-tl-sm"
               )}
             >
-              <ActionRenderer text={msg.text} onActionClick={handleAction} />
+              <LinkRenderer text={msg.text} onLinkClick={handleLinkClick} />
             </div>
           </motion.div>
         ))}
