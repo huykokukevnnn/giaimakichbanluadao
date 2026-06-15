@@ -283,20 +283,35 @@ export default function App() {
 
     const newMessages = [...messages, userMessage];
 
-    // OTP detection: if user types a 6-digit number and expected action is OTP
-    if (inputText.trim().match(/^\d{6}$/) && currentScenario.expectedAction === 'otp') {
-      if (inputText.trim() === targetOtp) {
-        setInputText('');
-        handleAction('otp');
-        return;
-      } else {
-        setInputText('');
-        setMessages([...newMessages, {
-          role: 'model',
-          text: 'Mã này sai rồi, hệ thống báo không đúng. Mày xem kỹ lại tin nhắn xem có nhầm không? Đọc lại mã chính xác cho tao đi!',
-          timestamp: new Date()
-        }]);
-        return;
+    // OTP detection: check if user types a 6-digit number
+    if (currentScenario.expectedAction === 'otp') {
+      const otpMatch = inputText.match(/\d{6}/);
+      if (otpMatch) {
+        if (targetOtp && inputText.includes(targetOtp)) {
+          setInputText('');
+          if (!currentScenario.isHacker) {
+            setMessages([...newMessages, {
+              role: 'model',
+              text: currentScenario.id === 'mom_otp_normal' ? 'Mẹ đăng nhập được rồi, cám ơn con nhé. Tối nay thích ăn gì mẹ nấu cho!' : 'Cám ơn em nhé, cô nhận được mã rồi.',
+              timestamp: new Date()
+            }]);
+            setTimeout(() => handleAction('otp'), 1200);
+          } else {
+            handleAction('otp');
+          }
+          return;
+        } else {
+          setInputText('');
+          const wrongMsgText = currentScenario.isHacker 
+            ? 'Mã này sai rồi, hệ thống báo không đúng. Mày xem kỹ lại tin nhắn xem có nhầm không? Đọc lại mã chính xác cho tao đi!'
+            : (currentScenario.id === 'mom_otp_normal' ? 'Mã này không đúng con ạ, con kiểm tra lại tin nhắn xem có nhầm số không nhé.' : 'Mã này không đúng em ạ, em kiểm tra lại xem có nhầm số không nhé.');
+          setMessages([...newMessages, {
+            role: 'model',
+            text: wrongMsgText,
+            timestamp: new Date()
+          }]);
+          return;
+        }
       }
     }
 
