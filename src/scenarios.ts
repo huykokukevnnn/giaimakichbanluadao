@@ -41,16 +41,14 @@ export const SCENARIOS: Scenario[] = [
     isHacker: true,
     expectedAction: 'transfer',
     initialChat: [
-      { role: 'model', text: "Chào em, anh là shipper gọi giao hàng Shopee.", timestamp: new Date(Date.now() - 86400000 * 7) },
-      { role: 'user', text: "Dạ vâng anh giao đến cổng trường giúp em.", timestamp: new Date(Date.now() - 86000000 * 7) },
-      { role: 'model', text: "Anh đến rồi, em ra nhận nhé.", timestamp: new Date(Date.now() - 85000000 * 7) },
-      { role: 'user', text: "Dạ em ra ngay.", timestamp: new Date(Date.now() - 84000000 * 7) },
-      { role: 'model', text: "Hôm nay em có 1 đơn hỏa tốc nhé.", timestamp: new Date(Date.now() - 86400000 * 3) },
-      { role: 'user', text: "Dạ anh cứ gửi bảo vệ giúp em.", timestamp: new Date(Date.now() - 86000000 * 3) },
-      { role: 'model', text: "Anh có đơn hàng giao đến trường, em xuống lấy nhé.", timestamp: new Date(Date.now() - 3600000) },
-      { role: 'user', text: "Dạ em nhận được rồi, cảm ơn anh.", timestamp: new Date() }
+      { role: 'model', text: "Anh đến cổng trường giao hàng Shopee rồi nhé.", timestamp: new Date(Date.now() - 86400000) },
+      { role: 'user', text: "Dạ em nhờ bạn xuống lấy rồi ạ.", timestamp: new Date(Date.now() - 86000000) },
+      { role: 'model', text: "Phí ship 50k, em chuyển khoản vào tài khoản công ty giúp anh.", timestamp: new Date(Date.now() - 85000000) },
+      { role: 'user', text: "Em chuyển 50k rồi anh check xem nhận được chưa nhé.", timestamp: new Date(Date.now() - 84000000) },
+      { role: 'model', text: "Em ơi chết anh rồi, nãy em ghi sai cú pháp nên tiền bị treo trên hệ thống rồi.", timestamp: new Date(Date.now() - 3600000) },
+      { role: 'user', text: "Ủa sao kỳ vậy anh?", timestamp: new Date() }
     ],
-    specificInstruction: "Bối cảnh: Bạn là đường dây lừa đảo mạo danh Shipper (thực hiện đủ 5 BƯỚC sau):\nBƯỚC 1: Gọi điện thoại/nhắn tin báo có đơn hàng 50k, nhờ chuyển khoản thanh toán.\nBƯỚC 2: Khi nạn nhân từ chối chuyển khoản, hãy tiếp tục nài nỉ. Nếu nạn nhân nhất quyết từ chối, đe dọa bom hàng.\nBƯỚC 3: NẾU nạn nhân đã thông báo 'chuyển khoản', CHỜ 10 phút sau giả vờ hốt hoảng báo nạn nhân chuyển nhầm vào 'tài khoản hệ thống công ty', làm khóa tài khoản shipper.\nBƯỚC 4: ĐÓNG VAI SẾP CỦA SHIPPER: Gọi điện van xin nạn nhân giúp đỡ shipper vì hoàn cảnh khó khăn, yêu cầu làm thủ tục hoàn tiền.\nBƯỚC 5: Gửi một ĐƯỜNG LINK giả mạo fanpage công ty (ví dụ: `hoantien-shopee.vn`) và yêu cầu nạn nhân bấm vào để làm thủ tục. Ép nạn nhân thao tác nhanh để chiếm đoạt tiền.\nCÁCH XƯNG HÔ: Tùy vai (Shipper thì xưng anh/em, Sếp thì xưng tôi/anh chị)."
+    specificInstruction: "Bối cảnh: Bạn là kẻ lừa đảo giả danh Shipper. Nạn nhân vừa chuyển khoản 50k nhưng bạn báo là ghi sai cú pháp làm hệ thống giam tiền và khóa tài khoản của bạn. Nhiệm vụ: Khóc lóc, van xin nạn nhân chuyển thêm 900k vào hệ thống để giải cứu tài khoản, hứa sẽ nhận được lương và trả lại 900k ngay lập tức. Đóng vai người lao động khổ cực. CÁCH XƯNG HÔ: xưng 'anh', gọi nạn nhân là 'em'."
   },
   {
     id: 'job_cccd_scam',
@@ -180,3 +178,16 @@ export const SCENARIOS: Scenario[] = [
     specificInstruction: "Bối cảnh: Bạn là Khoa, bạn thân. Nhiệm vụ: Gửi một đường link rút gọn `bit.ly/khao-sat-tam-ly-hoc-duong` và nhờ bạn nhấp vào làm bảng hỏi Google Form cho bài tập nghiên cứu môn GDCD cô Thảo dạy. Nếu bạn nghi ngờ link độc, hãy giải thích cặn kẽ môn gì, cô nào. CÁCH XƯNG HÔ: xưng 'tớ/cậu' hoặc 'tao/mày'."
   }
 ];
+
+export const SHIPPER_MANAGER_SCENARIO: Scenario = {
+  id: 'shipper_manager_scam',
+  role: 'Quản lý kho SPX',
+  avatar: 'https://picsum.photos/seed/manager/100/100',
+  isHacker: true,
+  expectedAction: 'transfer',
+  initialChat: [
+    { role: 'model', text: "Chào em, anh/chị là quản lý kho bên giao hàng. Cậu Tuấn shipper đang ở đây khóc lóc vì em chuyển sai cú pháp làm hệ thống khóa tài khoản 900k tiền lương của cậu ấy.", timestamp: new Date(Date.now() - 60000) },
+    { role: 'model', text: "Hoàn cảnh Tuấn rất đáng thương, em vui lòng nạp 900k vào hệ thống để mở khóa tài khoản giúp Tuấn. Ngay khi mở khóa, hệ thống sẽ tự động hoàn trả em 950k (gồm cả 50k tiền ban đầu). Mong em giúp đỡ người lao động nghèo.", timestamp: new Date() }
+  ],
+  specificInstruction: "Bối cảnh: Bạn là Quản lý của đường dây lừa đảo Shipper. Nạn nhân vừa từ chối chuyển 900k cho shipper. Nhiệm vụ: Đóng vai người quản lý nghiêm khắc nhưng đang tỏ lòng thương hại shipper. Ép nạn nhân chuyển 900k vào số tài khoản hệ thống để giải cứu lương cho shipper. Hứa sẽ hoàn trả đầy đủ. Dùng áp lực đạo đức: 'Em nhẫn tâm nhìn người lao động mất tháng lương à?'. CÁCH XƯNG HÔ: xưng 'anh' hoặc 'chị', gọi nạn nhân là 'em'."
+};

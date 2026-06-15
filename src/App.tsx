@@ -23,7 +23,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
 import { cn } from './lib/utils';
 
-import { SCENARIOS, Scenario, Message } from './scenarios';
+import { SCENARIOS, Scenario, Message, SHIPPER_MANAGER_SCENARIO } from './scenarios';
 
 type GameState = 'playing' | 'hacked' | 'win_reported' | 'fail_reported' | 'success_avoided' | 'fail_avoided' | 'win_action';
 
@@ -238,6 +238,18 @@ export default function App() {
     };
 
     const newMessages = [...messages, userMessage];
+
+    // Shipper Scam transition logic: Transition to manager after 2 refusal messages (total 5 user messages including history)
+    if (currentScenario.id === 'shipper_scam' && newMessages.filter(m => m.role === 'user').length >= 5) {
+      const newScenarios = [...shuffledScenarios];
+      newScenarios.splice(currentIndex + 1, 0, SHIPPER_MANAGER_SCENARIO);
+      setShuffledScenarios(newScenarios);
+      setCurrentIndex(currentIndex + 1);
+      setMessages(SHIPPER_MANAGER_SCENARIO.initialChat);
+      setInputText('');
+      return;
+    }
+
     setMessages(newMessages);
     setInputText('');
     
