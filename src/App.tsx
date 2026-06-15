@@ -289,8 +289,15 @@ export default function App() {
         setInputText('');
         handleAction('otp');
         return;
+      } else {
+        setInputText('');
+        setMessages([...newMessages, {
+          role: 'model',
+          text: 'Mã này sai rồi, hệ thống báo không đúng. Mày xem kỹ lại tin nhắn xem có nhầm không? Đọc lại mã chính xác cho tao đi!',
+          timestamp: new Date()
+        }]);
+        return;
       }
-      // If wrong OTP, send as normal message so AI can react
     }
 
     // Shipper Scam transition logic: Transition to manager after 2 refusal messages (total 5 user messages including history)
