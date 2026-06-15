@@ -421,6 +421,26 @@ export default function App() {
     if (!title || !currentScenario) return null;
 
     return (
+      <div className={cn("min-h-screen flex flex-col items-center justify-center p-6 text-white text-center", colorClass)}>
+        <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
+          <div className="mb-6 flex justify-center">{icon}</div>
+          <h1 className="text-4xl font-black mb-4 uppercase tracking-tight">{title}</h1>
+          <p className="text-xl opacity-90 max-w-lg mb-8">{sub}</p>
+          <button 
+            onClick={resetToNextScenario}
+            className="px-8 py-3 bg-white text-gray-900 rounded-full font-bold shadow-xl hover:bg-gray-100 transition-all"
+          >
+            Chơi tiếp màn tiếp theo
+          </button>
+        </motion.div>
+      </div>
+    );
+  };
+
+  const endScreen = renderEndScreen();
+  if (endScreen) return endScreen;
+
+  return (
     <div className="h-screen w-full flex overflow-hidden text-[15px] bg-[#1e1e1e]">
       {/* Column 1: Nav Rail */}
       <div className="hidden lg:flex flex-col items-center py-4 w-[60px] bg-[#1e1e1e] border-r border-white/5 shrink-0 justify-between z-20">
@@ -697,4 +717,3 @@ export default function App() {
     </div>
   );
 }
-}  
