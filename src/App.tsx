@@ -252,10 +252,10 @@ export default function App() {
 
   // Trigger initial AI response if we just started
   useEffect(() => {
-    if (currentScenario && messages.length === currentScenario.initialChat.length && !showOnboarding && !isLoading && gameState === 'playing') {
+    if (currentScenario && messages.length === currentScenario.initialChat.length && !isLoading && gameState === 'playing') {
       handleAiResponse(messages);
     }
-  }, [messages.length, showOnboarding, currentScenario]);
+  }, [messages.length, currentScenario]);
 
   // Logic 10 câu chat
   useEffect(() => {
@@ -483,7 +483,12 @@ export default function App() {
               <div 
                 key={s.id} 
                 onClick={() => {
-                  /* Optional: Can add a feature to let users switch chats, but for now it's linear */
+                  if (idx !== currentIndex && !isLoading) {
+                    setCurrentIndex(idx);
+                    setCurrentScenario(s);
+                    setMessages(s.initialChat);
+                    setGameState('playing');
+                  }
                 }}
                 className={cn(
                   "flex items-center gap-3 p-2 rounded-xl cursor-pointer transition-colors mb-1",
