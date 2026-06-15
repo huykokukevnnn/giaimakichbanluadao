@@ -188,10 +188,6 @@ const LinkRenderer = ({ text, onLinkClick }: { text: string, onLinkClick: () => 
     </div>
   );
 };
-
-  return <LinkRenderer text={text} onLinkClick={() => onActionClick('link')} />;
-};
-
 const getShuffledScenarios = (scenarios: Scenario[]): Scenario[] => {
   let result: Scenario[] = [];
   let remaining = [...scenarios];
