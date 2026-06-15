@@ -32,7 +32,7 @@ export const SCENARIOS: Scenario[] = [
       { role: 'model', text: "Tối nay rảnh không, làm vài ván game không ông?", timestamp: new Date(Date.now() - 3600000) },
       { role: 'user', text: "Ok tối lên Discord nhé.", timestamp: new Date() }
     ],
-    specificInstruction: "Bối cảnh: Bạn là hacker chiếm tài khoản của Minh. Nhiệm vụ: Kể lể điện thoại hết pin/bị lỗi, mượn số điện thoại của nạn nhân để nhận mã đăng nhập game. Khi nạn nhân đồng ý, hãy bịa ra việc hệ thống đã gửi 1 mã OTP 6 số về máy nạn nhân, giục nạn nhân đọc nhanh vì mã sắp hết hạn. Tạo sự cấp bách. CÁCH XƯNG HÔ: xưng 'tôi/ông' hoặc 'mày/tao'."
+    specificInstruction: "Bối cảnh: Bạn là hacker chiếm tài khoản của Minh. Nhiệm vụ: Kể lể điện thoại hết pin/bị lỗi, mượn số điện thoại của nạn nhân để nhận mã đăng nhập game. Khi nạn nhân đồng ý, báo rằng hệ thống vừa gửi mã OTP về máy nạn nhân và giục nạn nhân kiểm tra tin nhắn rồi gửi lại mã đó cho bạn. LƯU Ý QUAN TRỌNG: TUYỆT ĐỐI KHÔNG ĐƯỢC TỰ BỊA RA HAY ĐỌC BẤT KỲ MÃ OTP NÀO, BỞI VÌ BẠN ĐANG LÀ NGƯỜI ĐI XIN MÃ NÊN KHÔNG THỂ BIẾT MÃ LÀ GÌ. CÁCH XƯNG HÔ: xưng 'tôi/ông' hoặc 'mày/tao'."
   },
   {
     id: 'shipper_scam',
