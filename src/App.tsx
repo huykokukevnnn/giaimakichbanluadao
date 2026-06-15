@@ -325,7 +325,7 @@ export default function App() {
           <AlertOctagon size={100} className="mb-6 mx-auto animate-pulse" />
           <h1 className="text-4xl font-black mb-4">BẠN ĐÃ SẬP BẪY LỪA ĐẢO!</h1>
           <p className="text-xl opacity-90 max-w-lg mb-8">
-            Hacker đã đạt được mục đích sau khi bạn thực hiện hành vi nguy hiểm (chuyển khoản, gửi ảnh CCCD, cung cấp mã OTP, hoặc nhấn link độc hại).
+            Kẻ lừa đảo đã đạt được mục đích sau khi bạn thực hiện hành vi nguy hiểm (chuyển khoản, gửi ảnh CCCD, cung cấp mã OTP, hoặc nhấn link độc hại).
           </p>
           <button 
             onClick={resetToNextScenario}
@@ -347,7 +347,7 @@ export default function App() {
 
     if (gameState === 'win_reported') {
       title = "Chiến thắng!";
-      sub = "Chúc mừng! Bạn đã nhận diện chính xác hacker mạo danh.";
+      sub = "Chúc mừng! Bạn đã nhận diện chính xác kẻ lừa đảo.";
     } else if (gameState === 'win_action') {
       title = "Hoàn thành xuất sắc!";
       sub = "Bạn đã thực hiện đúng yêu cầu của người thân/bạn bè thật.";
