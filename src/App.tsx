@@ -504,9 +504,12 @@ export default function App() {
   if (endScreen) return endScreen;
 
   return (
-    <div className="min-h-screen bg-[#f0f2f5] md:p-4 flex flex-col md:flex-row items-center justify-center gap-4">
-      {/* Visual Sidebar Progress (based on image) */}
-      <div className="hidden md:flex flex-col gap-4 py-8 px-4 bg-sky-200 rounded-3xl shadow-lg self-stretch">
+    <div className="min-h-screen md:p-6 flex flex-col md:flex-row items-center justify-center gap-6 relative overflow-hidden">
+      {/* Mesh Background */}
+      <div className="mesh-bg" />
+
+      {/* Visual Sidebar Progress */}
+      <div className="hidden md:flex flex-col gap-5 py-8 px-4 glass-sidebar rounded-full self-center z-10">
         {shuffledScenarios.map((s, idx) => {
           const isCompleted = completedIndices.includes(idx);
           const isCurrent = idx === currentIndex;
@@ -543,15 +546,14 @@ export default function App() {
         })}
       </div>
 
-      <div className="w-full max-w-2xl bg-white text-gray-900 flex flex-col md:shadow-2xl md:rounded-3xl h-screen md:h-[90vh] overflow-hidden border border-gray-100 relative">
+      <div className="w-full max-w-2xl glass-panel text-gray-900 flex flex-col md:rounded-[2.5rem] h-screen md:h-[90vh] overflow-hidden relative z-10">
         {!currentScenario ? (
           <div className="flex-1 flex items-center justify-center">
             <div className="w-8 h-8 border-4 border-messenger border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : (
           <>
-            {/* Mesh Background */}
-            <div className="mesh-bg" />
+
 
       {/* Onboarding Pop-up */}
       <AnimatePresence>
@@ -588,21 +590,20 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Header */}
-      <header className="px-5 py-3 flex items-center justify-between bg-white/80 backdrop-blur-md border-b border-gray-50 sticky top-0 z-20">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden relative border border-gray-100">
+      <header className="px-6 py-4 flex items-center justify-between bg-white/60 backdrop-blur-md border-b border-white/20 sticky top-0 z-20 shadow-sm">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden relative border-2 border-white shadow-md">
             <img 
               src={currentScenario.avatar} 
               alt="Avatar" 
               className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
             />
-            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+            <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full"></div>
           </div>
           <div>
-            <h1 className="font-bold text-[15px]">{currentScenario.role}</h1>
-            <p className="text-[11px] text-gray-500 font-medium">Đang hoạt động</p>
+            <h1 className="font-bold text-lg tracking-tight text-gray-900">{currentScenario.role}</h1>
+            <p className="text-xs text-indigo-600 font-semibold">Đang hoạt động</p>
           </div>
         </div>
 
@@ -656,7 +657,7 @@ export default function App() {
       )}
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-6 space-y-5 bg-gradient-to-b from-transparent to-white/30">
         {messages.map((msg, idx) => (
           <motion.div
             key={idx}
@@ -669,10 +670,8 @@ export default function App() {
           >
             <div
               className={cn(
-                "max-w-[75%] px-4 py-2.5 rounded-2xl text-[14px]",
-                msg.role === 'user' 
-                  ? "bg-messenger text-white rounded-tr-sm" 
-                  : "bg-messenger-bubble-received text-gray-900 rounded-tl-sm"
+                "max-w-[80%] px-5 py-3 rounded-[1.25rem] text-[15px] leading-relaxed",
+                msg.role === 'user' ? "bubble-sent" : "bubble-received"
               )}
             >
               <LinkRenderer text={msg.text} onLinkClick={handleLinkClick} />
@@ -694,7 +693,7 @@ export default function App() {
       </div>
 
       {/* Footer */}
-      <footer className="p-4 border-t border-gray-50 bg-white sticky bottom-0 relative">
+      <footer className="p-4 border-t border-white/40 bg-white/60 backdrop-blur-md sticky bottom-0 relative z-20">
         <AnimatePresence>
           {showActionMenu && gameState === 'playing' && (
              <motion.div 
@@ -725,13 +724,13 @@ export default function App() {
             <Plus size={24} className={showActionMenu ? "rotate-45 transition-transform" : "transition-transform"} />
           </button>
           
-          <div className="flex-1 bg-gray-100 rounded-full px-4 py-2.5 flex items-center">
+          <div className="flex-1 bg-white/80 border border-gray-200 shadow-inner rounded-full px-5 py-3 flex items-center">
             <input
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               placeholder="Nhập tin nhắn..."
-              className="w-full bg-transparent border-none focus:ring-0 text-[14px] placeholder:text-gray-400 outline-none"
+              className="w-full bg-transparent border-none focus:ring-0 text-[15px] placeholder:text-gray-400 outline-none"
               disabled={gameState !== 'playing'}
             />
           </div>
