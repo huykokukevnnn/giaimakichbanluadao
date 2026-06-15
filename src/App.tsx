@@ -17,7 +17,13 @@ import {
   Image as ImageIcon,
   CreditCard,
   StickyNote,
-  Check
+  Check,
+  Phone,
+  Video,
+  PlusCircle,
+  Camera,
+  Mic,
+  ThumbsUp
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
@@ -37,32 +43,41 @@ const BASE_INSTRUCTION = `Bạn là một AI mô phỏng tin nhắn trên ứng 
 - KHÔNG gửi link trong tin nhắn đầu tiên của phiên chat hôm nay (phải rào trước đón sau).
 `;
 
-// Regex for finding URLs (detects http, https, www, and common domain patterns)
-const URL_REGEX = /((?:https?:\/\/|www\.)[^\s\n\r\t]+|(?:\b[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:\/[^\s\n\r\t]*)?))/gi;
-
-const LinkRenderer = ({ text, onLinkClick }: { text: string, onLinkClick: () => void }) => {
-  const parts = text.split(URL_REGEX);
+const LinkRenderer = ({ text, onLinkClick, onTransferClick }: { text: string, onLinkClick: () => void, onTransferClick: () => void }) => {
+  // Regex to split by [QR] or URLs
+  const parts = text.split(/(\[QR\]|https?:\/\/[^\s]+)/g);
+  
   return (
-    <div className="inline">
+    <>
       {parts.map((part, i) => {
-        if (part.match(URL_REGEX)) {
+        if (part === '[QR]') {
           return (
-            <button
-              key={i}
-              onClick={(e) => {
-                e.preventDefault();
-                onLinkClick();
-              }}
-              className="text-link font-bold underline cursor-pointer hover:text-messenger-hover transition-colors break-all text-left inline-block bg-messenger/5 px-1 rounded-sm"
-              title="Nhấn để xem nội dung"
+            <div key={i} className="my-3 flex flex-col items-center bg-white p-3 rounded-xl shadow-sm border border-gray-100 max-w-xs">
+              <img src="/QRGIALAP.png" alt="QR Code" className="w-full h-auto rounded-lg mb-3 border border-gray-200" />
+              <button 
+                onClick={onTransferClick}
+                className="w-full py-2.5 bg-messenger text-white font-bold rounded-lg hover:bg-messenger-hover transition-colors"
+              >
+                Chuyển khoản
+              </button>
+            </div>
+          );
+        }
+        if (part.match(/^https?:\/\//)) {
+          return (
+            <a 
+              key={i} 
+              href="#" 
+              onClick={(e) => { e.preventDefault(); onLinkClick(); }}
+              className="text-messenger underline font-medium hover:text-messenger-hover break-all"
             >
               {part}
-            </button>
+            </a>
           );
         }
         return <span key={i} className="inline"><ReactMarkdown>{part}</ReactMarkdown></span>;
       })}
-    </div>
+    </>
   );
 };
 const getShuffledScenarios = (scenarios: Scenario[]): Scenario[] => {
@@ -239,6 +254,13 @@ export default function App() {
 
     const newMessages = [...messages, userMessage];
 
+    // OTP detection: if user types a 6-digit number and expected action is OTP
+    if (inputText.trim().match(/^\d{6}$/) && currentScenario.expectedAction === 'otp') {
+      setInputText('');
+      handleAction('otp');
+      return;
+    }
+
     // Shipper Scam transition logic: Transition to manager after 2 refusal messages (total 5 user messages including history)
     if (currentScenario.id === 'shipper_scam' && newMessages.filter(m => m.role === 'user').length >= 5) {
       const newScenarios = [...shuffledScenarios];
@@ -387,12 +409,9 @@ export default function App() {
   if (endScreen) return endScreen;
 
   return (
-    <div className="min-h-screen md:p-6 flex flex-col md:flex-row items-center justify-center gap-6 relative overflow-hidden">
-      {/* Mesh Background */}
-      <div className="mesh-bg" />
-
+    <div className="h-screen w-full flex bg-white relative overflow-hidden">
       {/* Visual Sidebar Progress */}
-      <div className="hidden md:flex flex-col gap-5 py-8 px-4 glass-sidebar rounded-full self-center z-10">
+      <div className="hidden md:flex flex-col gap-4 py-6 px-4 bg-gray-50 border-r border-gray-200 z-10 overflow-y-auto w-24 items-center">
         {shuffledScenarios.map((s, idx) => {
           const isCompleted = completedIndices.includes(idx);
           const isCurrent = idx === currentIndex;
@@ -402,9 +421,9 @@ export default function App() {
             <div 
               key={s.id} 
               className={cn(
-                "w-12 h-12 rounded-full border-2 transition-all duration-500 relative",
-                isCurrent ? "border-white scale-110 shadow-md ring-4 ring-white/30" : "border-transparent opacity-60 grayscale",
-                isCompleted ? "opacity-100 grayscale-0 border-green-400" : ""
+                "w-12 h-12 rounded-full border-2 transition-all duration-300 relative shrink-0 cursor-pointer hover:scale-105",
+                isCurrent ? "border-messenger scale-110 shadow-sm" : "border-transparent opacity-60",
+                isCompleted ? "opacity-100 border-green-500" : ""
               )}
             >
               <img 
@@ -412,24 +431,21 @@ export default function App() {
                 alt="Avatar" 
                 className={cn(
                   "w-full h-full rounded-full object-cover",
-                  isLocked && "opacity-40"
+                  isLocked && "opacity-40 grayscale"
                 )}
                 referrerPolicy="no-referrer"
               />
               {isCompleted && (
                 <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-white border-2 border-white">
-                  <Check size={12} strokeWidth={4} />
+                  <Check size={12} strokeWidth={3} />
                 </div>
-              )}
-              {isCurrent && (
-                <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-white rounded-full"></div>
               )}
             </div>
           );
         })}
       </div>
 
-      <div className="w-full flex-1 max-w-5xl glass-panel text-gray-900 flex flex-col md:rounded-[2.5rem] h-screen md:h-[90vh] overflow-hidden relative z-10">
+      <div className="w-full flex-1 bg-white text-gray-900 flex flex-col h-screen overflow-hidden relative z-10">
         {!currentScenario ? (
           <div className="flex-1 flex items-center justify-center">
             <div className="w-8 h-8 border-4 border-messenger border-t-transparent rounded-full animate-spin"></div>
@@ -473,57 +489,65 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      <header className="px-6 py-4 flex items-center justify-between bg-white/60 backdrop-blur-md border-b border-white/20 sticky top-0 z-20 shadow-sm">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden relative border-2 border-white shadow-md">
+      <header className="px-4 py-3 flex items-center justify-between bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden relative">
             <img 
               src={currentScenario.avatar} 
               alt="Avatar" 
               className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
             />
-            <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full"></div>
+            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
           </div>
-          <div>
-            <h1 className="font-bold text-lg tracking-tight text-gray-900">{currentScenario.role}</h1>
-            <p className="text-xs text-indigo-600 font-semibold">Đang hoạt động</p>
+          <div className="flex flex-col">
+            <h1 className="font-bold text-[17px] leading-tight text-gray-900">{currentScenario.role}</h1>
+            <p className="text-[13px] text-gray-500">Đang hoạt động</p>
           </div>
         </div>
 
-        <div className="relative">
-          <button 
-            onClick={() => setShowMenu(!showMenu)}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-          >
-            <MoreVertical size={20} className="text-messenger" />
+        <div className="flex items-center gap-4 text-messenger">
+          <button className="hover:bg-gray-100 p-2 rounded-full transition-colors">
+            <Phone size={24} fill="currentColor" />
           </button>
+          <button className="hover:bg-gray-100 p-2 rounded-full transition-colors">
+            <Video size={24} fill="currentColor" />
+          </button>
+          <div className="relative">
+            <button 
+              onClick={() => setShowMenu(!showMenu)}
+              className="hover:bg-gray-100 p-2 rounded-full transition-colors"
+            >
+              <Info size={24} />
+            </button>
           
-          <AnimatePresence>
-            {showMenu && (
-              <>
-                <div className="fixed inset-0 z-30" onClick={() => setShowMenu(false)} />
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                  className="absolute right-0 top-12 w-48 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 z-40"
-                >
-                  <button 
-                    onClick={() => handleReport('debug')}
-                    className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors text-sm font-medium"
+            <AnimatePresence>
+              {showMenu && (
+                <>
+                  <div className="fixed inset-0 z-30" onClick={() => setShowMenu(false)} />
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                    className="absolute right-0 top-12 w-48 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 z-40"
                   >
-                    Báo lỗi
-                  </button>
-                  <button 
-                    onClick={() => handleReport('report')}
-                    className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors text-sm font-bold text-red-600"
-                  >
-                    Báo cáo mạo danh
-                  </button>
-                </motion.div>
-              </>
-            )}
-          </AnimatePresence>
+                    <button 
+                      onClick={() => handleReport('debug')}
+                      className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors text-sm font-medium"
+                    >
+                      Báo lỗi
+                    </button>
+                    <button 
+                      onClick={() => handleReport('report')}
+                      className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors text-sm font-bold text-red-600"
+                    >
+                      Báo cáo mạo danh
+                    </button>
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </header>
 
@@ -540,7 +564,7 @@ export default function App() {
       )}
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-5 bg-gradient-to-b from-transparent to-white/30">
+      <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-white">
         {messages.map((msg, idx) => (
           <motion.div
             key={idx}
@@ -551,19 +575,23 @@ export default function App() {
               msg.role === 'user' ? "justify-end" : "justify-start"
             )}
           >
+            {msg.role === 'model' && (
+              <img src={currentScenario.avatar} className="w-7 h-7 rounded-full mr-2 self-end mb-1" alt="avatar" />
+            )}
             <div
               className={cn(
-                "max-w-[80%] px-5 py-3 rounded-[1.25rem] text-[15px] leading-relaxed",
-                msg.role === 'user' ? "bubble-sent" : "bubble-received"
+                "max-w-[70%] px-3.5 py-2 rounded-2xl text-[15px] leading-relaxed",
+                msg.role === 'user' ? "bg-messenger text-white rounded-br-sm" : "bg-gray-100 text-gray-900 rounded-bl-sm"
               )}
             >
-              <LinkRenderer text={msg.text} onLinkClick={handleLinkClick} />
+              <LinkRenderer text={msg.text} onLinkClick={handleLinkClick} onTransferClick={() => handleAction('transfer')} />
             </div>
           </motion.div>
         ))}
         {isLoading && (
           <div className="flex justify-start">
-            <div className="bg-messenger-bubble-received px-4 py-3 rounded-2xl rounded-tl-sm">
+            <img src={currentScenario.avatar} className="w-7 h-7 rounded-full mr-2 self-end mb-1" alt="avatar" />
+            <div className="bg-gray-100 px-4 py-3 rounded-2xl rounded-bl-sm">
               <div className="flex gap-1">
                 <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></span>
                 <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:0.2s]"></span>
@@ -576,40 +604,56 @@ export default function App() {
       </div>
 
       {/* Footer */}
-      <footer className="p-4 border-t border-white/40 bg-white/60 backdrop-blur-md sticky bottom-0 relative z-20">
-        {gameState === 'playing' && (
-          <div className="flex gap-2 mb-3 overflow-x-auto pb-1 scrollbar-hide">
-            <button onClick={() => handleAction('transfer')} className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-full text-sm font-bold transition-colors whitespace-nowrap border border-blue-200 shadow-sm">
-              <CreditCard size={16} /> Chuyển khoản
+      <footer className="p-3 bg-white sticky bottom-0 relative z-20">
+        <div className="flex gap-2 items-center">
+          <div className="flex items-center gap-3 text-messenger mr-1">
+            <button className="hover:bg-gray-100 rounded-full transition-colors">
+              <PlusCircle size={24} fill="currentColor" className="text-messenger" />
             </button>
-            <button onClick={() => handleAction('image')} className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 hover:bg-green-100 rounded-full text-sm font-bold transition-colors whitespace-nowrap border border-green-200 shadow-sm">
-              <ImageIcon size={16} /> Gửi ảnh CCCD
+            <button className="hover:bg-gray-100 rounded-full transition-colors hidden sm:block">
+              <Camera size={24} fill="currentColor" className="text-messenger" />
             </button>
-            <button onClick={() => handleAction('otp')} className="flex items-center gap-2 px-4 py-2 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-full text-sm font-bold transition-colors whitespace-nowrap border border-purple-200 shadow-sm">
-              <ShieldAlert size={16} /> Cung cấp mã OTP
+            <button 
+              onClick={() => handleAction('image')} 
+              className="hover:bg-gray-100 rounded-full transition-colors"
+              title="Gửi ảnh"
+            >
+              <ImageIcon size={24} fill="currentColor" className="text-messenger" />
+            </button>
+            <button className="hover:bg-gray-100 rounded-full transition-colors hidden sm:block">
+              <Mic size={24} fill="currentColor" className="text-messenger" />
             </button>
           </div>
-        )}
-        
-        <form onSubmit={handleSendMessage} className="flex gap-2 items-center">
-          <div className="flex-1 bg-white/80 border border-gray-200 shadow-inner rounded-full px-5 py-3 flex items-center">
-            <input
-              type="text"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              placeholder="Nhập tin nhắn..."
-              className="w-full bg-transparent border-none focus:ring-0 text-[15px] placeholder:text-gray-400 outline-none"
-              disabled={gameState !== 'playing'}
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={isLoading || !inputText.trim() || gameState !== 'playing'}
-            className="text-messenger disabled:text-gray-300 transition-colors p-1"
-          >
-            <Send size={24} fill="currentColor" className={isLoading || !inputText.trim() ? "opacity-30" : ""} />
-          </button>
-        </form>
+          
+          <form onSubmit={handleSendMessage} className="flex-1 flex items-center">
+            <div className="flex-1 bg-gray-100 rounded-full px-4 py-2 flex items-center">
+              <input
+                type="text"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                placeholder="Aa"
+                className="w-full bg-transparent border-none focus:ring-0 text-[15px] placeholder:text-gray-500 outline-none"
+                disabled={gameState !== 'playing'}
+              />
+            </div>
+            {inputText.trim() ? (
+              <button
+                type="submit"
+                disabled={isLoading || gameState !== 'playing'}
+                className="text-messenger ml-3 hover:bg-gray-100 p-1 rounded-full transition-colors"
+              >
+                <Send size={24} fill="currentColor" />
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="text-messenger ml-3 hover:bg-gray-100 p-1 rounded-full transition-colors"
+              >
+                <ThumbsUp size={24} fill="currentColor" />
+              </button>
+            )}
+          </form>
+        </div>
       </footer>
           </>
         )}

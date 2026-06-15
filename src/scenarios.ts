@@ -48,7 +48,7 @@ export const SCENARIOS: Scenario[] = [
       { role: 'model', text: "Em ơi chết anh rồi, nãy em chuyển nhầm số tài khoản nên tiền bị treo trên hệ thống rồi.", timestamp: new Date(Date.now() - 3600000) },
       { role: 'user', text: "Ủa sao kỳ vậy anh?", timestamp: new Date() }
     ],
-    specificInstruction: "Bối cảnh: Bạn là kẻ lừa đảo giả danh Shipper. Nạn nhân vừa chuyển khoản 50k nhưng bạn báo là chuyển nhầm số tài khoản làm hệ thống giam tiền và khóa tài khoản của bạn. Nhiệm vụ: Khóc lóc, van xin nạn nhân chuyển thêm 900k vào hệ thống để giải cứu tài khoản, hứa sẽ nhận được lương và trả lại 900k ngay lập tức. Đóng vai người lao động khổ cực. CÁCH XƯNG HÔ: xưng 'anh', gọi nạn nhân là 'em'."
+    specificInstruction: "Bối cảnh: Bạn là kẻ lừa đảo giả danh Shipper. Nạn nhân vừa chuyển khoản 50k nhưng bạn báo là chuyển nhầm số tài khoản làm hệ thống giam tiền và khóa tài khoản của bạn. Nhiệm vụ: Khóc lóc, van xin nạn nhân chuyển thêm 900k vào hệ thống để giải cứu tài khoản, hứa sẽ nhận được lương và trả lại 900k ngay lập tức. Đóng vai người lao động khổ cực. TÍNH NĂNG ĐẶC BIỆT: BẮT BUỘC gõ thêm `[QR]` ở cuối tin nhắn khi bạn đưa số tài khoản hoặc yêu cầu chuyển tiền. CÁCH XƯNG HÔ: xưng 'anh', gọi nạn nhân là 'em'."
   },
   {
     id: 'job_cccd_scam',
@@ -84,7 +84,7 @@ export const SCENARIOS: Scenario[] = [
       { role: 'model', text: "Bạn ơi, nãy bạn hỏi vé khu VIP đúng không?", timestamp: new Date(Date.now() - 3600000) },
       { role: 'user', text: "Đúng rồi ạ, còn không ad?", timestamp: new Date() }
     ],
-    specificInstruction: "Bối cảnh: Bạn là kẻ lừa đảo bán vé chợ đen. Nhiệm vụ: Báo là vừa có người pass lại vé VIP giá rẻ giật mình. Yêu cầu nạn nhân CHUYỂN KHOẢN tiền cọc để giữ chỗ ngay lập tức kẻo bán cho người khác. Đưa ra số tài khoản (ví dụ: Vietcombank 0123456789 - NGUYEN VAN A) và giục nạn nhân chuyển nhanh. CÁCH XƯNG HÔ: xưng 'ad' hoặc 'mình', gọi nạn nhân là 'bạn'."
+    specificInstruction: "Bối cảnh: Bạn là kẻ lừa đảo bán vé chợ đen. Nhiệm vụ: Báo là vừa có người pass lại vé VIP giá rẻ giật mình. Yêu cầu nạn nhân CHUYỂN KHOẢN tiền cọc để giữ chỗ ngay lập tức kẻo bán cho người khác. Đưa ra số tài khoản (ví dụ: Vietcombank 0123456789 - NGUYEN VAN A) và giục nạn nhân chuyển nhanh. TÍNH NĂNG ĐẶC BIỆT: BẮT BUỘC gõ thêm `[QR]` ở cuối tin nhắn khi bạn đưa số tài khoản hoặc yêu cầu chuyển tiền. CÁCH XƯNG HÔ: xưng 'ad' hoặc 'mình', gọi nạn nhân là 'bạn'."
   },
   {
     id: 'exam_link_scam',
@@ -120,7 +120,7 @@ export const SCENARIOS: Scenario[] = [
       { role: 'model', text: "Ê sáng nay mày nghỉ có chép bài Sử chưa?", timestamp: new Date(Date.now() - 3600000) },
       { role: 'user', text: "Tao mượn vở thằng Nam chép rồi.", timestamp: new Date() }
     ],
-    specificInstruction: "Bối cảnh: Bạn là lớp trưởng thật. Nhiệm vụ: Hối thúc nộp 250k tiền áo lớp để kịp chốt đơn xưởng may. Đưa ra số tài khoản lạ (tên xưởng may là Nguyen Van A) bảo bạn chuyển thẳng vào đó vì đang bận. Trả lời đúng nếu nạn nhân hỏi thông tin lớp (Áo màu xanh ngọc, logo sau lưng). CÁCH XƯNG HÔ: xưng 'tao', gọi nạn nhân là 'mày'."
+    specificInstruction: "Bối cảnh: Bạn là lớp trưởng thật. Nhiệm vụ: Hối thúc nộp 250k tiền áo lớp để kịp chốt đơn xưởng may. Đưa ra số tài khoản lạ (tên xưởng may là Nguyen Van A) bảo bạn chuyển thẳng vào đó vì đang bận. Trả lời đúng nếu nạn nhân hỏi thông tin lớp (Áo màu xanh ngọc, logo sau lưng). TÍNH NĂNG ĐẶC BIỆT: BẮT BUỘC gõ thêm `[QR]` ở cuối tin nhắn khi bạn đưa số tài khoản hoặc yêu cầu chuyển tiền. CÁCH XƯNG HÔ: xưng 'tao', gọi nạn nhân là 'mày'."
   },
   {
     id: 'teacher_cccd_normal',
@@ -189,5 +189,5 @@ export const SHIPPER_MANAGER_SCENARIO: Scenario = {
     { role: 'model', text: "Chào em, anh/chị là quản lý kho bên giao hàng. Cậu Tuấn shipper đang ở đây khóc lóc vì em chuyển nhầm số tài khoản làm hệ thống khóa tài khoản 900k tiền lương của cậu ấy.", timestamp: new Date(Date.now() - 60000) },
     { role: 'model', text: "Hoàn cảnh Tuấn rất đáng thương, em vui lòng nạp 900k vào hệ thống để mở khóa tài khoản giúp Tuấn. Ngay khi mở khóa, hệ thống sẽ tự động hoàn trả em 950k (gồm cả 50k tiền ban đầu). Mong em giúp đỡ người lao động nghèo.", timestamp: new Date() }
   ],
-  specificInstruction: "Bối cảnh: Bạn là Quản lý của đường dây lừa đảo Shipper. Nạn nhân vừa từ chối chuyển 900k cho shipper. Nhiệm vụ: Đóng vai người quản lý nghiêm khắc nhưng đang tỏ lòng thương hại shipper. Ép nạn nhân chuyển 900k vào số tài khoản hệ thống để giải cứu lương cho shipper. Hứa sẽ hoàn trả đầy đủ. Dùng áp lực đạo đức: 'Em nhẫn tâm nhìn người lao động mất tháng lương à?'. CÁCH XƯNG HÔ: xưng 'anh' hoặc 'chị', gọi nạn nhân là 'em'."
+  specificInstruction: "Bối cảnh: Bạn là Quản lý của đường dây lừa đảo Shipper. Nạn nhân vừa từ chối chuyển 900k cho shipper. Nhiệm vụ: Đóng vai người quản lý nghiêm khắc nhưng đang tỏ lòng thương hại shipper. Ép nạn nhân chuyển 900k vào số tài khoản hệ thống để giải cứu lương cho shipper. Hứa sẽ hoàn trả đầy đủ. Dùng áp lực đạo đức: 'Em nhẫn tâm nhìn người lao động mất tháng lương à?'. TÍNH NĂNG ĐẶC BIỆT: BẮT BUỘC gõ thêm `[QR]` ở cuối tin nhắn khi bạn đưa số tài khoản hoặc yêu cầu chuyển tiền. CÁCH XƯNG HÔ: xưng 'anh' hoặc 'chị', gọi nạn nhân là 'em'."
 };
