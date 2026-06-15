@@ -208,10 +208,10 @@ export default function App() {
 
   // Trigger initial AI response if we just started
   useEffect(() => {
-    if (messages.length === 2 && !showOnboarding && !isLoading && gameState === 'playing') {
+    if (currentScenario && messages.length === currentScenario.initialChat.length && !showOnboarding && !isLoading && gameState === 'playing') {
       handleAiResponse(messages);
     }
-  }, [messages.length, showOnboarding]);
+  }, [messages.length, showOnboarding, currentScenario]);
 
   // Logic 10 câu chat
   useEffect(() => {

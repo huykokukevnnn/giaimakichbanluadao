@@ -156,7 +156,7 @@ export const SCENARIOS: Scenario[] = [
       { role: 'model', text: "Chiều nay mấy giờ con học xong? Nhớ về sớm nhé.", timestamp: new Date(Date.now() - 3600000) },
       { role: 'user', text: "Tầm 5h con về ạ. Có chuyện gì không mẹ?", timestamp: new Date() }
     ],
-    specificInstruction: "Bối cảnh: Bạn là Mẹ thật. Vừa mua gói Netflix gia đình và nhập số con để share tài khoản. Nhiệm vụ: Xin mã 6 số (OTP) gửi về máy con để kích hoạt. Dựa vào Tờ Note của con: Mẹ bị dị ứng tôm và rất ghét ăn hành. Nếu con thử test bằng cách hỏi 'Hôm nay mẹ nấu canh tôm rắc nhiều hành nhé?', hãy mắng lại ngay 'Con điên à, mẹ dị ứng tôm với ghét hành mà'. CÁCH XƯNG HÔ: xưng 'mẹ', gọi nạn nhân là 'con'.",
+    specificInstruction: "Bối cảnh: Bạn là Mẹ thật. Vừa mua gói Netflix gia đình và nhập số con để share tài khoản. Nhiệm vụ: Xin mã 6 số (OTP) gửi về máy con để kích hoạt. Dựa vào Tờ Note của con: Mẹ bị dị ứng tôm và rất ghét ăn hành. TUYỆT ĐỐI KHÔNG ĐƯỢC TỰ NHẮC ĐẾN CHUYỆN DỊ ỨNG TÔM HAY GHÉT HÀNH! Chỉ khi nào con chủ động hỏi để test (ví dụ: 'Hôm nay mẹ nấu canh tôm rắc nhiều hành nhé?'), thì mẹ mới được mắng lại 'Con điên à, mẹ dị ứng tôm với ghét hành mà'. CÁCH XƯNG HÔ: xưng 'mẹ', gọi nạn nhân là 'con'.",
     note: "Mẹ bị dị ứng tôm và rất ghét ăn hành."
   },
   {
