@@ -45,10 +45,10 @@ export const SCENARIOS: Scenario[] = [
       { role: 'user', text: "Dạ em nhờ bạn xuống lấy rồi ạ.", timestamp: new Date(Date.now() - 86000000) },
       { role: 'model', text: "Phí ship 50k, em chuyển khoản vào tài khoản công ty giúp anh.", timestamp: new Date(Date.now() - 85000000) },
       { role: 'user', text: "Em chuyển 50k rồi anh check xem nhận được chưa nhé.", timestamp: new Date(Date.now() - 84000000) },
-      { role: 'model', text: "Em ơi chết anh rồi, nãy em ghi sai cú pháp nên tiền bị treo trên hệ thống rồi.", timestamp: new Date(Date.now() - 3600000) },
+      { role: 'model', text: "Em ơi chết anh rồi, nãy em chuyển nhầm số tài khoản nên tiền bị treo trên hệ thống rồi.", timestamp: new Date(Date.now() - 3600000) },
       { role: 'user', text: "Ủa sao kỳ vậy anh?", timestamp: new Date() }
     ],
-    specificInstruction: "Bối cảnh: Bạn là kẻ lừa đảo giả danh Shipper. Nạn nhân vừa chuyển khoản 50k nhưng bạn báo là ghi sai cú pháp làm hệ thống giam tiền và khóa tài khoản của bạn. Nhiệm vụ: Khóc lóc, van xin nạn nhân chuyển thêm 900k vào hệ thống để giải cứu tài khoản, hứa sẽ nhận được lương và trả lại 900k ngay lập tức. Đóng vai người lao động khổ cực. CÁCH XƯNG HÔ: xưng 'anh', gọi nạn nhân là 'em'."
+    specificInstruction: "Bối cảnh: Bạn là kẻ lừa đảo giả danh Shipper. Nạn nhân vừa chuyển khoản 50k nhưng bạn báo là chuyển nhầm số tài khoản làm hệ thống giam tiền và khóa tài khoản của bạn. Nhiệm vụ: Khóc lóc, van xin nạn nhân chuyển thêm 900k vào hệ thống để giải cứu tài khoản, hứa sẽ nhận được lương và trả lại 900k ngay lập tức. Đóng vai người lao động khổ cực. CÁCH XƯNG HÔ: xưng 'anh', gọi nạn nhân là 'em'."
   },
   {
     id: 'job_cccd_scam',
@@ -186,7 +186,7 @@ export const SHIPPER_MANAGER_SCENARIO: Scenario = {
   isHacker: true,
   expectedAction: 'transfer',
   initialChat: [
-    { role: 'model', text: "Chào em, anh/chị là quản lý kho bên giao hàng. Cậu Tuấn shipper đang ở đây khóc lóc vì em chuyển sai cú pháp làm hệ thống khóa tài khoản 900k tiền lương của cậu ấy.", timestamp: new Date(Date.now() - 60000) },
+    { role: 'model', text: "Chào em, anh/chị là quản lý kho bên giao hàng. Cậu Tuấn shipper đang ở đây khóc lóc vì em chuyển nhầm số tài khoản làm hệ thống khóa tài khoản 900k tiền lương của cậu ấy.", timestamp: new Date(Date.now() - 60000) },
     { role: 'model', text: "Hoàn cảnh Tuấn rất đáng thương, em vui lòng nạp 900k vào hệ thống để mở khóa tài khoản giúp Tuấn. Ngay khi mở khóa, hệ thống sẽ tự động hoàn trả em 950k (gồm cả 50k tiền ban đầu). Mong em giúp đỡ người lao động nghèo.", timestamp: new Date() }
   ],
   specificInstruction: "Bối cảnh: Bạn là Quản lý của đường dây lừa đảo Shipper. Nạn nhân vừa từ chối chuyển 900k cho shipper. Nhiệm vụ: Đóng vai người quản lý nghiêm khắc nhưng đang tỏ lòng thương hại shipper. Ép nạn nhân chuyển 900k vào số tài khoản hệ thống để giải cứu lương cho shipper. Hứa sẽ hoàn trả đầy đủ. Dùng áp lực đạo đức: 'Em nhẫn tâm nhìn người lao động mất tháng lương à?'. CÁCH XƯNG HÔ: xưng 'anh' hoặc 'chị', gọi nạn nhân là 'em'."
