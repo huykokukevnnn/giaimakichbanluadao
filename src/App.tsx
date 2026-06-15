@@ -23,7 +23,8 @@ import {
   PlusCircle,
   Camera,
   Mic,
-  ThumbsUp
+  ThumbsUp,
+  Bell
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
@@ -127,6 +128,8 @@ export default function App() {
   const [gameState, setGameState] = useState<GameState>('playing');
   const [showMenu, setShowMenu] = useState(false);
   const [showActionMenu, setShowActionMenu] = useState(false);
+  const [targetOtp, setTargetOtp] = useState<string | null>(null);
+  const [showOtpNotification, setShowOtpNotification] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const aiRef = useRef<Groq | null>(null);
 
@@ -137,6 +140,20 @@ export default function App() {
     setCurrentScenario(shuffled[0]);
     setMessages(shuffled[0].initialChat);
   }, []);
+
+  // OTP Generation & Notification Logic
+  useEffect(() => {
+    if (currentScenario && currentScenario.expectedAction === 'otp') {
+      const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
+      setTargetOtp(newOtp);
+      // Wait 3 seconds to show push notification
+      const timer = setTimeout(() => setShowOtpNotification(true), 3000);
+      return () => clearTimeout(timer);
+    } else {
+      setTargetOtp(null);
+      setShowOtpNotification(false);
+    }
+  }, [currentScenario]);
 
   const resetToNextScenario = () => {
     if (currentIndex >= shuffledScenarios.length - 1) {
@@ -256,9 +273,12 @@ export default function App() {
 
     // OTP detection: if user types a 6-digit number and expected action is OTP
     if (inputText.trim().match(/^\d{6}$/) && currentScenario.expectedAction === 'otp') {
-      setInputText('');
-      handleAction('otp');
-      return;
+      if (inputText.trim() === targetOtp) {
+        setInputText('');
+        handleAction('otp');
+        return;
+      }
+      // If wrong OTP, send as normal message so AI can react
     }
 
     // Shipper Scam transition logic: Transition to manager after 2 refusal messages (total 5 user messages including history)
@@ -446,6 +466,32 @@ export default function App() {
       </div>
 
       <div className="w-full flex-1 bg-white text-gray-900 flex flex-col h-screen overflow-hidden relative z-10">
+        {/* OTP Notification Toast */}
+        <AnimatePresence>
+          {showOtpNotification && targetOtp && gameState === 'playing' && (
+            <motion.div 
+              initial={{ y: -100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -100, opacity: 0 }}
+              className="absolute top-4 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-xl px-4 py-3 rounded-2xl shadow-xl border border-gray-200 z-50 flex items-start gap-3 w-11/12 max-w-sm cursor-pointer hover:bg-gray-50 transition-colors"
+              onClick={() => setShowOtpNotification(false)}
+            >
+              <div className="bg-blue-500 text-white p-2 rounded-xl shrink-0 mt-0.5">
+                <Bell size={20} fill="currentColor" />
+              </div>
+              <div className="flex-1">
+                <div className="flex justify-between items-center mb-0.5">
+                  <p className="text-[13px] font-bold text-gray-900 uppercase tracking-wide">Tin nhắn hệ thống</p>
+                  <p className="text-[11px] text-gray-500">Bây giờ</p>
+                </div>
+                <p className="text-[14px] text-gray-700 leading-tight">
+                  Mã xác thực (OTP) của bạn là <span className="font-bold text-black text-[16px] mx-0.5">{targetOtp}</span>. Tuyệt đối KHÔNG chia sẻ mã này cho bất kỳ ai.
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {!currentScenario ? (
           <div className="flex-1 flex items-center justify-center">
             <div className="w-8 h-8 border-4 border-messenger border-t-transparent rounded-full animate-spin"></div>
