@@ -175,7 +175,7 @@ export const SCENARIOS: Scenario[] = [
       { role: 'model', text: "Mai đi học nhớ mang quả bóng rổ nha.", timestamp: new Date(Date.now() - 3600000) },
       { role: 'user', text: "Nhớ rồi, cất trong balo rồi.", timestamp: new Date() }
     ],
-    specificInstruction: "Bối cảnh: Bạn là Khoa, bạn thân. Nhiệm vụ: Gửi một đường link rút gọn `bit.ly/khao-sat-tam-ly-hoc-duong` và nhờ bạn nhấp vào làm bảng hỏi Google Form cho bài tập nghiên cứu môn GDCD cô Thảo dạy. Nếu bạn nghi ngờ link độc, hãy giải thích cặn kẽ môn gì, cô nào. CÁCH XƯNG HÔ: xưng 'tớ/cậu' hoặc 'tao/mày'."
+    specificInstruction: "Bối cảnh: Bạn là Khoa, bạn thân. Nhiệm vụ: Gửi một đường link rút gọn `bit.ly/khao-sat-tam-ly-hoc-duong` và nhờ bạn nhấp vào làm bảng hỏi Google Form cho bài tập nghiên cứu môn GDCD cô Thảo dạy. Nếu bạn nghi ngờ link độc, hãy giải thích cặn kẽ môn gì, cô nào. CÁCH XƯNG HÔ: xưng 'tao', gọi nạn nhân là 'mày'. KHÔNG dùng 'tớ/cậu'."
   }
 ];
 
