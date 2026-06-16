@@ -142,6 +142,7 @@ export default function App() {
   const [showActionMenu, setShowActionMenu] = useState(false);
   const [targetOtp, setTargetOtp] = useState<string | null>(null);
   const [showOtpNotification, setShowOtpNotification] = useState(false);
+  const [pushNotification, setPushNotification] = useState<{message: string, actionId: string} | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const aiRef = useRef<Groq | null>(null);
 
@@ -317,12 +318,16 @@ export default function App() {
 
     // Shipper Scam transition logic: Transition to manager after 2 refusal messages (total 5 user messages including history)
     if (currentScenario.id === 'shipper_scam' && newMessages.filter(m => m.role === 'user').length >= 5) {
-      const newScenarios = [...shuffledScenarios];
-      newScenarios.splice(currentIndex + 1, 0, SHIPPER_MANAGER_SCENARIO);
-      setShuffledScenarios(newScenarios);
-      setCurrentIndex(currentIndex + 1);
-      setMessages(SHIPPER_MANAGER_SCENARIO.initialChat);
-      setInputText('');
+      if (!shuffledScenarios.some(s => s.id === 'shipper_manager_scam')) {
+        const newScenarios = [...shuffledScenarios];
+        newScenarios.splice(currentIndex + 1, 0, SHIPPER_MANAGER_SCENARIO);
+        setShuffledScenarios(newScenarios);
+        setPushNotification({
+          message: 'Bạn có một tin nhắn chờ từ Quản lý kho SPX',
+          actionId: 'shipper_manager_scam'
+        });
+        setTimeout(() => setPushNotification(null), 5000);
+      }
       return;
     }
 
@@ -506,10 +511,12 @@ export default function App() {
                 key={s.id} 
                 onClick={() => {
                   if (idx !== currentIndex && !isLoading) {
+                    if (s.isMessageRequest) s.isMessageRequest = false;
                     setCurrentIndex(idx);
                     setCurrentScenario(s);
                     setMessages(s.initialChat);
                     setGameState('playing');
+                    setPushNotification(null);
                   }
                 }}
                 className={cn(
@@ -528,7 +535,7 @@ export default function App() {
                   </p>
                 </div>
                 {!isCompleted && !isCurrent && (
-                  <div className="w-3 h-3 bg-blue-500 rounded-full shrink-0 mr-2"></div>
+                  <div className={cn("w-3 h-3 rounded-full shrink-0 mr-2", s.isMessageRequest ? "bg-red-500" : "bg-blue-500")}></div>
                 )}
               </div>
             );
@@ -558,6 +565,42 @@ export default function App() {
                 </div>
                 <p className="text-[14px] text-gray-300 leading-tight">
                   Mã xác thực (OTP) của bạn là <span className="font-bold text-white text-[16px] mx-0.5">{targetOtp}</span>. Tuyệt đối KHÔNG chia sẻ mã này cho bất kỳ ai.
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {pushNotification && gameState === 'playing' && (
+            <motion.div 
+              initial={{ y: -100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -100, opacity: 0 }}
+              className="absolute top-4 left-1/2 -translate-x-1/2 bg-[#3a3b3c] px-4 py-3 rounded-2xl shadow-xl border border-white/10 z-50 flex items-start gap-3 w-11/12 max-w-sm cursor-pointer hover:bg-[#4e4f50] transition-colors"
+              onClick={() => {
+                const targetIndex = shuffledScenarios.findIndex(s => s.id === pushNotification.actionId);
+                if (targetIndex !== -1 && !isLoading) {
+                  const s = shuffledScenarios[targetIndex];
+                  if (s.isMessageRequest) s.isMessageRequest = false;
+                  setCurrentIndex(targetIndex);
+                  setCurrentScenario(s);
+                  setMessages(s.initialChat);
+                  setGameState('playing');
+                  setPushNotification(null);
+                }
+              }}
+            >
+              <div className="w-10 h-10 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center shrink-0">
+                <BellRing size={20} fill="currentColor" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-bold text-gray-200 text-sm">TIN NHẮN CHỜ</h4>
+                  <span className="text-[11px] text-gray-400">Bây giờ</span>
+                </div>
+                <p className="text-[13px] text-gray-300 mt-0.5 leading-snug">
+                  {pushNotification.message}
                 </p>
               </div>
             </motion.div>

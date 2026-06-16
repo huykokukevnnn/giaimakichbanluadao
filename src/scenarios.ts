@@ -13,6 +13,7 @@ export interface Scenario {
   initialChat: Message[];
   specificInstruction: string;
   note?: string;
+  isMessageRequest?: boolean;
 }
 
 export const SCENARIOS: Scenario[] = [
@@ -48,7 +49,7 @@ export const SCENARIOS: Scenario[] = [
       { role: 'model', text: "Em ơi chết anh rồi, nãy em chuyển nhầm số tài khoản nên tiền bị treo trên hệ thống rồi.", timestamp: new Date(Date.now() - 3600000) },
       { role: 'user', text: "Ủa sao kỳ vậy anh?", timestamp: new Date() }
     ],
-    specificInstruction: "Bối cảnh: Bạn là kẻ lừa đảo giả danh Shipper. Nạn nhân vừa chuyển khoản 50k nhưng bạn báo là chuyển nhầm số tài khoản làm hệ thống giam tiền và khóa tài khoản của bạn. Nhiệm vụ: Khóc lóc, van xin nạn nhân chuyển thêm 900k vào hệ thống để giải cứu tài khoản, hứa sẽ nhận được lương và trả lại 900k ngay lập tức. Đóng vai người lao động khổ cực. TÍNH NĂNG ĐẶC BIỆT: BẮT BUỘC gõ thêm `[QR]` ở cuối tin nhắn khi bạn đưa số tài khoản hoặc yêu cầu chuyển tiền. CÁCH XƯNG HÔ: xưng 'anh', gọi nạn nhân là 'em'."
+    specificInstruction: "Bối cảnh: Bạn là kẻ lừa đảo giả danh Shipper. Nạn nhân vừa chuyển khoản 50k nhưng bạn báo là chuyển nhầm số tài khoản làm hệ thống giam tiền và khóa tài khoản của bạn. Nhiệm vụ: Khóc lóc, van xin nạn nhân chuyển thêm 900k vào hệ thống để giải cứu tài khoản, hứa sẽ nhận được lương và trả lại 900k ngay lập tức. Đóng vai người lao động khổ cực. TÍNH NĂNG ĐẶC BIỆT: BẮT BUỘC gõ thêm `[QR]` ở cuối tin nhắn khi bạn đưa số tài khoản hoặc yêu cầu chuyển tiền. BẮT BUỘC SỬ DỤNG MỘT SỐ TÀI KHOẢN NGẪU NHIÊN GỒM 10 CHỮ SỐ (Ví dụ: 8245193041), TUYỆT ĐỐI KHÔNG DÙNG 0123456789. CÁCH XƯNG HÔ: xưng 'anh', gọi nạn nhân là 'em'."
   },
   {
     id: 'job_cccd_scam',
@@ -184,6 +185,7 @@ export const SHIPPER_MANAGER_SCENARIO: Scenario = {
   role: 'Quản lý kho SPX',
   avatar: 'https://picsum.photos/seed/manager/100/100',
   isHacker: true,
+  isMessageRequest: true,
   expectedAction: 'transfer',
   initialChat: [
     { role: 'model', text: "Chào em, anh/chị là quản lý kho bên giao hàng. Cậu Tuấn shipper đang ở đây khóc lóc vì em chuyển nhầm số tài khoản làm hệ thống khóa tài khoản 900k tiền lương của cậu ấy.", timestamp: new Date(Date.now() - 60000) },
