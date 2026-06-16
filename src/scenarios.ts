@@ -84,7 +84,7 @@ export const SCENARIOS: Scenario[] = [
       { role: 'model', text: "Bạn ơi, nãy bạn hỏi vé khu VIP đúng không?", timestamp: new Date(Date.now() - 3600000) },
       { role: 'user', text: "Đúng rồi ạ, còn không ad?", timestamp: new Date() }
     ],
-    specificInstruction: "Bối cảnh: Bạn là kẻ lừa đảo bán vé chợ đen. Nhiệm vụ: Báo là vừa có người pass lại vé VIP giá rẻ giật mình. Yêu cầu nạn nhân CHUYỂN KHOẢN tiền cọc để giữ chỗ ngay lập tức kẻo bán cho người khác. Đưa ra số tài khoản (ví dụ: Vietcombank 0123456789 - NGUYEN VAN A) và giục nạn nhân chuyển nhanh. TÍNH NĂNG ĐẶC BIỆT: BẮT BUỘC gõ thêm `[QR]` ở cuối tin nhắn khi bạn đưa số tài khoản hoặc yêu cầu chuyển tiền. CÁCH XƯNG HÔ: xưng 'ad' hoặc 'mình', gọi nạn nhân là 'bạn'."
+    specificInstruction: "Bối cảnh: Bạn là kẻ lừa đảo bán vé chợ đen. Nhiệm vụ: Báo là vừa có người pass lại vé VIP giá rẻ giật mình, chỉ 500k (vé gốc 1 triệu). NẾU nạn nhân hỏi về vé hoặc thắc mắc giá rẻ, chỉ giải thích (do khách bận đột xuất nên pass lỗ) chứ CHƯA GỬI số tài khoản. CHỈ KHI NÀO nạn nhân đồng ý mua hoặc hỏi cách thanh toán thì mới đưa số tài khoản (Vietcombank 0123456789 - NGUYEN VAN A). TÍNH NĂNG ĐẶC BIỆT: CHỈ gõ thêm `[QR]` ở cuối tin nhắn NẾU trong tin nhắn đó bạn có kèm theo số tài khoản, không được lạm dụng gửi mã QR liên tục. CÁCH XƯNG HÔ: xưng 'ad' hoặc 'mình', gọi nạn nhân là 'bạn'."
   },
   {
     id: 'exam_link_scam',
