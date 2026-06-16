@@ -57,8 +57,8 @@ const BASE_INSTRUCTION = `Bạn là một AI mô phỏng tin nhắn trên ứng 
 `;
 
 const LinkRenderer = ({ text, onLinkClick, onTransferClick }: { text: string, onLinkClick: () => void, onTransferClick: () => void }) => {
-  // Regex to split by [QR] or URLs
-  const parts = text.split(/(\[QR\]|https?:\/\/[^\s]+)/g);
+  // Regex to split by [QR], URLs with http/https, or bit.ly URLs
+  const parts = text.split(/(\[QR\]|https?:\/\/[^\s]+|bit\.ly\/[^\s]+)/g);
   
   return (
     <>
@@ -76,7 +76,7 @@ const LinkRenderer = ({ text, onLinkClick, onTransferClick }: { text: string, on
             </div>
           );
         }
-        if (part.match(/^https?:\/\//)) {
+        if (part.match(/^(https?:\/\/|bit\.ly\/)/)) {
           return (
             <a 
               key={i} 
